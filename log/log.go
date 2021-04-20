@@ -21,6 +21,8 @@ type logEntity struct {
 //Log ...
 var Log *logEntity
 
+var File io.Writer
+
 const (
 	//Service ...
 	Service = "service"
@@ -43,7 +45,8 @@ func Init(service string, path string, level string, isConsole bool) {
 	})
 	l.SetFormatter(&formatter{isConsole: isConsole})
 	l.SetLevel(getLevel(level))
-	l.SetOutput(getWriter(path))
+	getWriter(path)
+	l.SetOutput(File)
 	Log = &logEntity{l: l}
 }
 
@@ -70,7 +73,7 @@ func getLevel(level string) logrus.Level {
 	}
 }
 
-func getWriter(p string) io.Writer {
+func getWriter(p string) {
 	if len(p) == 0 {
 		p, e := tools.GetCurrentPath()
 		if e != nil {
@@ -87,7 +90,7 @@ func getWriter(p string) io.Writer {
 	if err != nil {
 		panic(err)
 	}
-	return writer
+	File = writer
 }
 
 //NewLog ...
